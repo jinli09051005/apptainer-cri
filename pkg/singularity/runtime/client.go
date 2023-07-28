@@ -93,7 +93,7 @@ func run(cmd []string) error {
 }
 
 func parseBuildConfig(data []byte) BuildConfig {
-	const singularityConfdir = "SINGULARITY_CONFDIR"
+	const singularityConfdir = "APPTAINER_CONFDIR"
 
 	var cfg BuildConfig
 	scanner := bufio.NewScanner(bytes.NewReader(data))
