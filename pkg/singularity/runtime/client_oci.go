@@ -99,7 +99,7 @@ func (c *CLIClient) Delete(id string) error {
 // When no tty is allocated by the runtime, Create returns master end of the allocated tty
 // (need to allocate it to separate stderr) that can be used to propagate any input into container,
 // if stdin was requested. Master end should be closed as soon as container is
-// not running any more. For pod master end can be closed immediately.
+// not running anymore. For pod master end can be closed immediately.
 func (c *CLIClient) Create(id, bundle string, stdin, tty bool, flags ...string) (io.WriteCloser, error) {
 	var stdinWrite io.WriteCloser
 

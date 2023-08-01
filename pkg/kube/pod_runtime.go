@@ -38,14 +38,12 @@ func (p *Pod) spawnOCIPod() error {
 	if err != nil {
 		return fmt.Errorf("could not create oci bundle: %v", err)
 	}
-
 	syncCtx, cancel := context.WithCancel(context.Background())
 	p.syncCancel = cancel
 	p.syncChan, err = runtime.ObserveState(syncCtx, p.socketPath())
 	if err != nil {
 		return fmt.Errorf("could not listen for state changes: %v", err)
 	}
-
 	glog.V(3).Infof("Creating pod %s", p.id)
 	pty, err := p.cli.Create(p.id, p.bundlePath(), false, false, "--empty-process", "--sync-socket", p.socketPath())
 	if err != nil {
