@@ -21,8 +21,8 @@ import (
 	"os"
 	"path/filepath"
 
+	ocibundle "github.com/apptainer/apptainer/pkg/ocibundle/sif"
 	"github.com/golang/glog"
-	ocibundle "github.com/sylabs/singularity/pkg/ocibundle/sif"
 )
 
 const (
