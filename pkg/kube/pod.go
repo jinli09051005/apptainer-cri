@@ -19,13 +19,13 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/apptainer/apptainer/pkg/ociruntime"
 	"github.com/golang/glog"
 	"github.com/opencontainers/runtime-spec/specs-go"
 	"github.com/sylabs/singularity-cri/pkg/namespace"
 	"github.com/sylabs/singularity-cri/pkg/network"
 	"github.com/sylabs/singularity-cri/pkg/rand"
 	"github.com/sylabs/singularity-cri/pkg/singularity/runtime"
-	"github.com/sylabs/singularity/pkg/ociruntime"
 	k8s "k8s.io/kubernetes/pkg/kubelet/apis/cri/runtime/v1alpha2"
 )
 

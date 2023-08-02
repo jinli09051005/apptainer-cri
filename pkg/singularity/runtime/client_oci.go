@@ -26,11 +26,11 @@ import (
 	"strings"
 	"syscall"
 
+	"github.com/apptainer/apptainer/pkg/ociruntime"
 	"github.com/creack/pty"
 	"github.com/golang/glog"
 	"github.com/opencontainers/runtime-spec/specs-go"
 	syio "github.com/sylabs/singularity-cri/pkg/io"
-	"github.com/sylabs/singularity/pkg/ociruntime"
 )
 
 // ErrNotFound us returned when Singularity OCI engine responds with

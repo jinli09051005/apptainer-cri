@@ -22,13 +22,13 @@ import (
 	"os/exec"
 	"time"
 
+	"github.com/apptainer/apptainer/pkg/ociruntime"
+	"github.com/apptainer/apptainer/pkg/util/unix"
 	"github.com/golang/glog"
 	"github.com/sylabs/singularity-cri/pkg/image"
 	"github.com/sylabs/singularity-cri/pkg/rand"
 	"github.com/sylabs/singularity-cri/pkg/singularity"
 	"github.com/sylabs/singularity-cri/pkg/singularity/runtime"
-	"github.com/sylabs/singularity/pkg/ociruntime"
-	"github.com/sylabs/singularity/pkg/util/unix"
 	k8s "k8s.io/kubernetes/pkg/kubelet/apis/cri/runtime/v1alpha2"
 )
 
