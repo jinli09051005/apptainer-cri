@@ -1,4 +1,4 @@
-// Copyright (c) 2018, Sylabs Inc. All rights reserved.
+// Copyright (c) 2018-2021, Sylabs Inc. All rights reserved.
 // This software is licensed under a 3-clause BSD license. Please consult the LICENSE.md file
 // distributed with the sources of this project regarding your rights to use or distribute this
 // software.
@@ -12,11 +12,28 @@ import (
 	"net/http"
 )
 
+// Error describes an error condition.
+type Error struct {
+	Code    int    `json:"code,omitempty"`
+	Message string `json:"message,omitempty"`
+}
+
 func (e *Error) Error() string {
 	if e.Message != "" {
 		return fmt.Sprintf("%v (%v %v)", e.Message, e.Code, http.StatusText(e.Code))
 	}
 	return fmt.Sprintf("%v %v", e.Code, http.StatusText(e.Code))
+}
+
+// Is compares e against target. If target is an Error and matches the non-zero fields of e, true
+// is returned.
+func (e *Error) Is(target error) bool {
+	t, ok := target.(*Error)
+	if !ok {
+		return false
+	}
+	return ((e.Code == t.Code) || t.Code == 0) &&
+		((e.Message == t.Message) || t.Message == "")
 }
 
 // PageDetails specifies paging information.
@@ -26,20 +43,6 @@ type PageDetails struct {
 	TotalSize int    `json:"totalSize,omitempty"`
 }
 
-// Error describes an error condition.
-type Error struct {
-	Code    int    `json:"code,omitempty"`
-	Message string `json:"message,omitempty"`
-}
-
-var (
-	// JSONErrorUnauthorized is a generic 401 unauthorized response
-	JSONErrorUnauthorized = &Error{
-		Code:    http.StatusUnauthorized,
-		Message: "Unauthorized",
-	}
-)
-
 // Response is the top level container of all of our REST API responses.
 type Response struct {
 	Data  interface{}  `json:"data,omitempty"`
@@ -47,16 +50,7 @@ type Response struct {
 	Error *Error       `json:"error,omitempty"`
 }
 
-// NewError returns an error that contains the given code and message.
-func NewError(code int, message string) *Error {
-	return &Error{
-		Code:    code,
-		Message: message,
-	}
-}
-
 func encodeResponse(w http.ResponseWriter, jr Response, code int) error {
-
 	// We _could_ encode the JSON directly to the response, but in so doing, the response code is
 	// written out the first time Write() is called under the hood. This makes it difficult to
 	// return an appropriate HTTP code when JSON encoding fails, so we use an intermediate buffer
@@ -74,18 +68,19 @@ func encodeResponse(w http.ResponseWriter, jr Response, code int) error {
 	return nil
 }
 
-// WriteError encodes the supplied error in a response, and writes to w.
-func WriteError(w http.ResponseWriter, error string, code int) error {
+// WriteError writes a status code and JSON response containing the supplied error message and
+// status code to w.
+func WriteError(w http.ResponseWriter, message string, code int) error {
 	jr := Response{
 		Error: &Error{
 			Code:    code,
-			Message: error,
+			Message: message,
 		},
 	}
 	return encodeResponse(w, jr, code)
 }
 
-// WriteResponsePage encodes the supplied data in a paged JSON response, and writes to w.
+// WriteResponsePage writes a status code and JSON response containing data and pd to w.
 func WriteResponsePage(w http.ResponseWriter, data interface{}, pd *PageDetails, code int) error {
 	jr := Response{
 		Data: data,
@@ -94,7 +89,7 @@ func WriteResponsePage(w http.ResponseWriter, data interface{}, pd *PageDetails,
 	return encodeResponse(w, jr, code)
 }
 
-// WriteResponse encodes the supplied data in a response, and writes to w.
+// WriteResponse writes a status code and JSON response containing data to w.
 func WriteResponse(w http.ResponseWriter, data interface{}, code int) error {
 	return WriteResponsePage(w, data, nil, code)
 }

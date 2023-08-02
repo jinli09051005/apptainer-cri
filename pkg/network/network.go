@@ -15,14 +15,15 @@
 package network
 
 import (
+	"context"
 	"fmt"
 	"net"
 	"strings"
 	"sync"
 
+	snetwork "github.com/apptainer/apptainer/pkg/network"
 	"github.com/containernetworking/cni/libcni"
 	"github.com/golang/glog"
-	snetwork "github.com/sylabs/singularity/pkg/network"
 	k8s "k8s.io/kubernetes/pkg/kubelet/apis/cri/runtime/v1alpha2"
 )
 
@@ -207,7 +208,7 @@ func (m *Manager) SetUpPod(podConfig *PodConfig) (*PodNetwork, error) {
 	if err := setup.SetArgs([]string{args}); err != nil {
 		return nil, err
 	}
-	if err := setup.AddNetworks(); err != nil {
+	if err := setup.AddNetworks(context.TODO()); err != nil {
 		return nil, err
 	}
 	return &PodNetwork{
@@ -224,7 +225,7 @@ func (m *Manager) TearDownPod(podNetwork *PodNetwork) error {
 	if podNetwork.setup == nil {
 		return fmt.Errorf("nil network setup")
 	}
-	return podNetwork.setup.DelNetworks()
+	return podNetwork.setup.DelNetworks(context.TODO())
 }
 
 // Status returns an error if the network manager is not initialized.
