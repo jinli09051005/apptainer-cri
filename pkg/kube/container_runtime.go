@@ -63,7 +63,7 @@ func (c *Container) UpdateState() error {
 	if err != nil {
 		return fmt.Errorf("could not get container state: %v", err)
 	}
-	c.runtimeState = runtime.StatusToState(c.ociState.Status)
+	c.runtimeState = runtime.StatusToState(string(c.ociState.Status))
 	return nil
 }
 

@@ -95,7 +95,7 @@ func (p *Pod) UpdateState() error {
 	if err != nil {
 		return fmt.Errorf("could not get pod state: %v", err)
 	}
-	p.runtimeState = runtime.StatusToState(p.ociState.Status)
+	p.runtimeState = runtime.StatusToState(string(p.ociState.Status))
 	return nil
 }
 

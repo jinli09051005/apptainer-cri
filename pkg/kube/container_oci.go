@@ -197,7 +197,7 @@ func (t *containerTranslator) configureDevices() error {
 					UID:      &device.Uid,
 					GID:      &device.Gid,
 				})
-				t.g.AddLinuxResourcesDevice(true, string(device.Type), &device.Major, &device.Minor, device.Permissions)
+				t.g.AddLinuxResourcesDevice(true, string(device.Type), &device.Major, &device.Minor, string(device.Permissions))
 			}
 			continue
 		}
@@ -214,33 +214,33 @@ func (t *containerTranslator) configureDevices() error {
 			UID:      &device.Uid,
 			GID:      &device.Gid,
 		})
-		t.g.AddLinuxResourcesDevice(true, string(device.Type), &device.Major, &device.Minor, device.Permissions)
+		t.g.AddLinuxResourcesDevice(true, string(device.Type), &device.Major, &device.Minor, string(device.Permissions))
 	}
 	return nil
 }
 
 func (t *containerTranslator) configureNamespaces() {
 	t.g.ClearLinuxNamespaces()
-	t.g.AddOrReplaceLinuxNamespace(specs.UTSNamespace, t.pod.namespacePath(specs.UTSNamespace))
-	t.g.AddOrReplaceLinuxNamespace(specs.MountNamespace, "")
+	t.g.AddOrReplaceLinuxNamespace(string(specs.UTSNamespace), t.pod.namespacePath(specs.UTSNamespace))
+	t.g.AddOrReplaceLinuxNamespace(string(specs.MountNamespace), "")
 
 	security := t.cont.GetLinux().GetSecurityContext()
 	switch security.GetNamespaceOptions().GetIpc() {
 	case k8s.NamespaceMode_CONTAINER:
-		t.g.AddOrReplaceLinuxNamespace(specs.IPCNamespace, "")
+		t.g.AddOrReplaceLinuxNamespace(string(specs.IPCNamespace), "")
 	case k8s.NamespaceMode_POD:
 		podNsPath := t.pod.namespacePath(specs.IPCNamespace)
 		if podNsPath != "" {
-			t.g.AddOrReplaceLinuxNamespace(specs.IPCNamespace, podNsPath)
+			t.g.AddOrReplaceLinuxNamespace(string(specs.IPCNamespace), podNsPath)
 		}
 	}
 	switch security.GetNamespaceOptions().GetNetwork() {
 	case k8s.NamespaceMode_CONTAINER:
-		t.g.AddOrReplaceLinuxNamespace(specs.NetworkNamespace, "")
+		t.g.AddOrReplaceLinuxNamespace(string(specs.NetworkNamespace), "")
 	case k8s.NamespaceMode_POD:
 		podNsPath := t.pod.namespacePath(specs.NetworkNamespace)
 		if podNsPath != "" {
-			t.g.AddOrReplaceLinuxNamespace(specs.NetworkNamespace, podNsPath)
+			t.g.AddOrReplaceLinuxNamespace(string(specs.NetworkNamespace), podNsPath)
 		}
 	}
 	switch security.GetNamespaceOptions().GetPid() {
