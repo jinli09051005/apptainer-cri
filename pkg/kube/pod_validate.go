@@ -65,15 +65,21 @@ func (p *Pod) validateConfig() error {
 		p.Hostname = hostname
 	}
 
-	cgroupsPath := p.GetLinux().GetCgroupParent()
-	if cgroupsPath == "" {
-		cgroupsPath = filepath.Join(defaultCgroup, p.id)
-		glog.V(2).Infof("Setting pod's %s cgroup parent to default value %q", p.id, cgroupsPath)
-		if p.GetLinux() == nil {
-			p.Linux = new(k8s.LinuxPodSandboxConfig)
-		}
-		p.Linux.CgroupParent = cgroupsPath
+	//cgroupsPath := p.GetLinux().GetCgroupParent()
+	//if cgroupsPath == "" {
+	//	cgroupsPath = filepath.Join("system.slice", ":", defaultCgroup, ":", p.id)
+	//	glog.V(2).Infof("Setting pod's %s cgroup parent to default value %q", p.id, cgroupsPath)
+	//	if p.GetLinux() == nil {
+	//		p.Linux = new(k8s.LinuxPodSandboxConfig)
+	//	}
+	//	p.Linux.CgroupParent = cgroupsPath
+	//}
+	cgroupsPath := filepath.Join("system.slice", ":", defaultCgroup, ":", p.id)
+	glog.V(2).Infof("Setting pod's %s cgroup parent to default value %q", p.id, cgroupsPath)
+	if p.GetLinux() == nil {
+		p.Linux = new(k8s.LinuxPodSandboxConfig)
 	}
+	p.Linux.CgroupParent = cgroupsPath
 
 	security := p.GetLinux().GetSecurityContext()
 	if security != nil {
