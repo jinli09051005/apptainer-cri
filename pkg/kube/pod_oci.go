@@ -17,6 +17,7 @@ package kube
 import (
 	"fmt"
 	"io/ioutil"
+	"path/filepath"
 
 	"github.com/golang/glog"
 	"github.com/kubernetes-sigs/cri-o/pkg/seccomp"
@@ -84,7 +85,8 @@ func (t *podTranslator) translate() (*specs.Spec, error) {
 		return nil, err
 	}
 
-	t.g.SetLinuxCgroupsPath(t.pod.GetLinux().GetCgroupParent())
+	//t.g.SetLinuxCgroupsPath(t.pod.GetLinux().GetCgroupParent())
+	t.g.SetLinuxCgroupsPath(filepath.Join("system.slice", ":", defaultCgroup, ":", t.pod.id))
 	t.g.SetRootReadonly(security.GetReadonlyRootfs())
 	t.g.SetProcessUID(uint32(security.GetRunAsUser().GetValue()))
 	t.g.SetProcessGID(uint32(security.GetRunAsGroup().GetValue()))
