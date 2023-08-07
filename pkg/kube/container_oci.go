@@ -417,7 +417,6 @@ func (t *containerTranslator) configureUser() error {
 	if security.GetRunAsGroup() != nil {
 		userParts = append(userParts, fmt.Sprintf("%d", security.GetRunAsGroup().GetValue()))
 	}
-
 	userSpec := strings.Join(userParts, ":")
 	if userSpec == "" && t.cont.imgInfo.OciConfig != nil {
 		// if no user is set fallback to image config
@@ -441,6 +440,12 @@ func (t *containerTranslator) configureUser() error {
 }
 
 func getContainerUser(rootfs, userSpec string) (*user.ExecUser, error) {
+	defaultUser := &user.ExecUser{
+		Uid:   0,
+		Gid:   0,
+		Sgids: nil,
+		Home:  "/root",
+	}
 	passwdFile, err := os.Open(filepath.Join(rootfs, "/etc/passwd"))
 	if err == nil {
 		defer passwdFile.Close()
@@ -451,8 +456,9 @@ func getContainerUser(rootfs, userSpec string) (*user.ExecUser, error) {
 	}
 
 	execUser, err := user.GetExecUser(userSpec, nil, passwdFile, groupFile)
+
 	if err != nil {
-		return nil, fmt.Errorf("invalid user: %v", err)
+		return defaultUser, nil
 	}
 	return execUser, nil
 }
